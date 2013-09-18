@@ -11,7 +11,8 @@ trait UrlCodingUtils {
 
   private val toSkip = BitSet((('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ "!$&'()*+,;=:/?#[]@-._~".toSet).map(_.toInt): _*)
   private val space = ' '.toInt
-  private[rl] val PctEncoded = """%([0-9a-fA-F][0-9a-fA-F])""".r
+  private[rl] val PossiblyPctEncoded = """%(..)""".r
+  private[rl] val CorrectlyPctEncoded = """%([0-9a-fA-F][0-9a-fA-F])""".r
   private val LowerPctEncoded = """%([0-9a-f][0-9a-f])""".r
   private val InvalidChars = "[^\\.a-zA-Z0-9!$&'()*+,;=:/?#\\[\\]@-_~]".r
 
@@ -21,7 +22,9 @@ trait UrlCodingUtils {
   private[rl] val Utf8 = Charset.forName(UTF_8)
 
   def isUrlEncoded(string: String) = {
-    PctEncoded.findFirstIn(string).isDefined
+    PossiblyPctEncoded.findAllIn(string).toSeq.forall(possiblePctEndodedString => {
+      CorrectlyPctEncoded.pattern.matcher(possiblePctEndodedString).matches()
+    })
   }
 
   def containsInvalidUriChars(string: String) = {
@@ -83,7 +86,8 @@ trait UrlCodingUtils {
               out.put(yc.toByte)
             }
           } else {
-            in.position(mark)
+            out.put('%'.toByte)
+            in.position(mark + 1)
           }
         } else {
           in.position(in.position() - 1)

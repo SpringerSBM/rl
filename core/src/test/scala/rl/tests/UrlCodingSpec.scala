@@ -36,6 +36,9 @@ class UrlCodingSpec extends Specification {
       "decode a pct encoded string" ! {
         urlDecode("hello%20world") must_== "hello world"
       } ^
+      "decode a badly pct encoded string" ! {
+        urlDecode("hello%20world%xx") must_== "hello world%xx"
+      } ^
       "decode value consisting of 2 values to 1 char" ! {
         urlDecode("%C3%A9") must_== "é"
       } ^
@@ -44,7 +47,15 @@ class UrlCodingSpec extends Specification {
         "skips '%23' when decoding" ! { urlDecode("%23", toSkip = "/?#") must_== "%23" } ^
         "skips '%3F' when decoding" ! { urlDecode("%3F", toSkip = "/?#") must_== "%3F" } ^
         "still encodes others" ! { urlDecode("br%C3%BCcke", toSkip = "/?#") must_== "brücke"} ^
-        "handles mixed" ! { urlDecode("/ac%2Fdc/br%C3%BCcke%2342%3Fcheck", toSkip = "/?#") must_== "/ac%2Fdc/brücke%2342%3Fcheck"} ^ p ^
+        "handles mixed" ! { urlDecode("/ac%2Fdc/br%C3%BCcke%2342%3Fcheck", toSkip = "/?#") must_== "/ac%2Fdc/brücke%2342%3Fcheck"
+      } ^ p ^
+    "Checking if a string is UrlEncoded should" ^
+      "recognize a correctly url-encoded string as urlencoded" ! {
+        isUrlEncoded("/foo?%22bar%2Ccar") must beTrue
+      } ^
+      "recognize an incorrectly url-encoded string as not urlencoded" ! {
+        isUrlEncoded("/foo?%22bar%xx") must beFalse
+      } ^ p ^
     "The plusIsSpace flag specifies how to treat pluses" ^
       "it treats + as allowed when the plusIsSpace flag is either not supplied or supplied as false" ! {
         urlDecode("+") must_== "+"

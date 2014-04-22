@@ -32,7 +32,7 @@ object ShellPrompt {
 
 object RlSettings {
   val buildOrganization = "org.scalatra.rl"
-  val buildScalaVersion = "2.9.3"
+  val buildScalaVersion = "2.10.2"
 //
 //  lazy val formatSettings = ScalariformPlugin.scalariformSettings ++ Seq(
 //     preferences in Compile := formattingPreferences,
@@ -66,21 +66,17 @@ object RlSettings {
         "-unchecked",
         "-Xcheckinit",
         "-encoding", "utf8"),
-      libraryDependencies <+= (scalaVersion) {
-        case "2.9.0" => "org.specs2" %% "specs2" % "1.7.1" % "test"
-        case "2.9.0-1" => "org.specs2" %% "specs2" % "1.8.2" % "test"
-        case v if v.startsWith("2.9.1") => "org.specs2" %% "specs2" % "1.12.4" % "test"
-        case v if v.startsWith("2.9") => "org.specs2" %% "specs2" % "1.12.4.1" % "test"
-        case _ => "org.specs2" %% "specs2" % "1.14" % "test"
-      },
-      libraryDependencies += "junit" % "junit" % "4.10" % "test",
+    libraryDependencies ++= Seq(
+      "org.specs2" %% "specs2" % "2.2.2" % "test"
+    ),
+    libraryDependencies += "junit" % "junit" % "4.10" % "test",
       crossVersion := CrossVersion.binary,
       resolvers ++= Seq(
         "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases",
         "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
         "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
       ),
-      crossScalaVersions := Seq("2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.9.3"),
+      crossScalaVersions := Seq("2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.9.3", "2.10.2"),
 //      (excludeFilter in format) <<= (excludeFilter) (_ || "*Spec.scala"),
       libraryDependencies ++= compilerPlugins,
       artifact in (Compile, packageBin) ~= { (art: Artifact) =>
@@ -172,8 +168,8 @@ object RlBuild extends Build {
   lazy val root = Project ("rl-project", file("."),
                           settings = Project.defaultSettings ++ unpublished ++ Seq(
                             name := "rl-project",
-                            scalaVersion := "2.9.3",
-                            crossScalaVersions := Seq("2.9.1", "2.9.0-1", "2.9.0", "2.9.1-1", "2.9.2", "2.9.3")
+                            scalaVersion := "2.10.2",
+                            crossScalaVersions := Seq("2.9.1", "2.9.0-1", "2.9.0", "2.9.1-1", "2.9.2", "2.9.3, 2.10.2")
                           )) aggregate(core, followRedirects)
 
   lazy val core = Project ("rl", file("core"), settings = projectSettings ++ buildInfoSettings ++ Seq(
